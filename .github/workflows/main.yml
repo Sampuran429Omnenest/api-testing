@@ -1,4 +1,5 @@
 name: CI/CD Pipeline
+
 on:
   push:
     branches: [main, master]
@@ -19,12 +20,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
 
-      - run: npm install
-      - run: npm install --save-dev ts-node
-
-      - name: Update snapshots
-        run: npx jest --updateSnapshot --forceExit
+      - run: npm ci
 
       - name: Run tests with coverage
         run: npm run test:coverage -- --ci --forceExit
@@ -58,10 +56,10 @@ jobs:
           path: coverage/
 
       - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v6
+        uses: SonarSource/sonarqube-scan-action@v5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: https://bookish-space-doodle-wr6jxr76p5wrfg5gw-9000.app.github.dev
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         with:
           args: >
             -Dsonar.projectKey=asfasdfasfa
@@ -72,6 +70,7 @@ jobs:
             -Dsonar.exclusions=src/**/*.test.ts,src/**/*.test.tsx,src/setupTests.ts,src/main.tsx,node_modules/**,dist/**,coverage/**
             -Dsonar.test.inclusions=src/**/*.test.ts,src/**/*.test.tsx
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.testExecutionReportPaths=coverage/test-reporter.xml
             -Dsonar.typescript.tsconfigPath=tsconfig.json
 
       - name: SonarQube Quality Gate
@@ -79,7 +78,7 @@ jobs:
         timeout-minutes: 5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: https://bookish-space-doodle-wr6jxr76p5wrfg5gw-9000.app.github.dev
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
   # ── Step 3: Deploy (only on push to main/master) ──────────────
   deploy:
@@ -93,10 +92,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
 
-      - run: npm install
+      - run: npm ci
       - run: npm run build
 
       - name: Deploy
         run: echo " Deploy your app here (Vercel / S3 / Azure / etc.)"
-  
