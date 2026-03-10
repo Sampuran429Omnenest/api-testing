@@ -62,15 +62,14 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         with:
           args: >
-            -Dsonar.projectKey=asfasdfasfa
-            -Dsonar.projectName=asfasdfasfa
+            -Dsonar.projectKey=jest-sonarqube
+            -Dsonar.projectName=jest-sonarqube
             -Dsonar.sources=src
             -Dsonar.tests=src
             -Dsonar.inclusions=src/**/*.ts,src/**/*.tsx
             -Dsonar.exclusions=src/**/*.test.ts,src/**/*.test.tsx,src/setupTests.ts,src/main.tsx,node_modules/**,dist/**,coverage/**
             -Dsonar.test.inclusions=src/**/*.test.ts,src/**/*.test.tsx
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-            -Dsonar.testExecutionReportPaths=coverage/test-reporter.xml
             -Dsonar.typescript.tsconfigPath=tsconfig.json
  
       - name: SonarQube Quality Gate
