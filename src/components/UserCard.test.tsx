@@ -1,19 +1,17 @@
-// src/components/UserCard.test.tsx
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import UserCard from './UserCard';
 
+// Setup Mocking for global fetch
 declare const global: typeof globalThis & {
   fetch: jest.Mock;
 };
+
 (global as any).fetch = jest.fn();
 
-// Mock the global fetch function
-global.fetch = jest.fn();
-
 describe('UserCard', () => {
-
   beforeEach(() => {
-    (global.fetch as jest.Mock).mockResolvedValue({
+    // Reset and define the mock behavior before each test
+    global.fetch.mockResolvedValue({
       json: jest.fn().mockResolvedValue({ name: 'Jane Doe' }),
     });
   });
@@ -29,8 +27,11 @@ describe('UserCard', () => {
 
   it('renders user name after fetch completes', async () => {
     render(<UserCard userId={1} />);
-    await waitFor(() => {
-      expect(screen.getByText('Jae Doe')).toBeInTheDocument();
-    });
+
+    // findByText replaces waitFor + getByText
+    // It waits up to 1000ms and wraps the check in act()
+    const nameElement = await screen.findByText('Jane Doe');
+    
+    expect(nameElement).toBeInTheDocument();
   });
 });

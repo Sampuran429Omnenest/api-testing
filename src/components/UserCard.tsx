@@ -1,4 +1,3 @@
-// src/components/UserCard.tsx
 import { useState, useEffect } from 'react';
 
 const UserCard = ({ userId }: { userId: number }) => {
@@ -6,9 +5,21 @@ const UserCard = ({ userId }: { userId: number }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true; // Cleanup flag
+
     fetch(`https://fakestoreapi.com/users/${userId}`)
-      .then(r => r.json())
-      .then(data => { setName(data.name); setLoading(false); });
+      .then((r) => r.json())
+      .then((data) => {
+        if (isMounted) {
+          setName(data.name);
+          setLoading(false);
+        }
+      })
+      .catch(() => {
+        if (isMounted) setLoading(false);
+      });
+
+    return () => { isMounted = false; }; // Cleanup on unmount
   }, [userId]);
 
   if (loading) return <p>Loading...</p>;
