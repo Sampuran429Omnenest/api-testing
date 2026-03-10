@@ -33,7 +33,7 @@ jobs:
           HIT=$(grep -h "^LH:" coverage/lcov.info | awk -F: '{s+=$2} END{print s}')
           PCT=$(( HIT * 100 / FOUND ))
           echo "Coverage: $PCT%"
-          [ "$PCT" -ge 70 ] || { echo " Coverage $PCT% < 70%. Failing."; exit 1; }
+          [ "$PCT" -ge 80 ] || { echo " Coverage $PCT% < 80%. Failing."; exit 1; }
  
       - uses: actions/upload-artifact@v4
         with:
@@ -62,8 +62,8 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         with:
           args: >
-            -Dsonar.projectKey=jest-sonarqube
-            -Dsonar.projectName=jest-sonarqube
+            -Dsonar.projectKey=ApiTut-sonarqube
+            -Dsonar.projectName=ApiTut-sonarqube
             -Dsonar.sources=src
             -Dsonar.tests=src
             -Dsonar.inclusions=src/**/*.ts,src/**/*.tsx
