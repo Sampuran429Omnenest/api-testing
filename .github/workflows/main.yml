@@ -79,7 +79,7 @@ jobs:
         timeout-minutes: 5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: https://fuzzy-waffle-rrqxpvqpgr62pxw7-9000.app.github.dev
+          SONAR_HOST_URL: https://bookish-space-doodle-wr6jxr76p5wrfg5gw-9000.app.github.dev
 
   # ── Step 3: Deploy (only on push to main/master) ──────────────
   deploy:
