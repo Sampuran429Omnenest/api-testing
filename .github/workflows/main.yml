@@ -1,13 +1,13 @@
 name: CI/CD Pipeline
-
+ 
 on:
   push:
     branches: [main, master]
   pull_request:
     branches: [main, master]
-
+ 
 jobs:
-
+ 
   # ── Step 1: Test + Coverage Gate ──────────────────────────────
   test:
     name: Test & Coverage Gate
@@ -16,17 +16,17 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
+ 
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-
+ 
       - run: npm ci
-
+ 
       - name: Run tests with coverage
         run: npm run test:coverage -- --ci --forceExit
-
+ 
       - name: Check coverage is ≥ 80%
         run: |
           FOUND=$(grep -h "^LF:" coverage/lcov.info | awk -F: '{s+=$2} END{print s}')
@@ -34,12 +34,12 @@ jobs:
           PCT=$(( HIT * 100 / FOUND ))
           echo "Coverage: $PCT%"
           [ "$PCT" -ge 80 ] || { echo " Coverage $PCT% < 80%. Failing."; exit 1; }
-
+ 
       - uses: actions/upload-artifact@v4
         with:
           name: coverage
           path: coverage/
-
+ 
   # ── Step 2: SonarQube Analysis ────────────────────────────────
   sonar:
     name: SonarQube Scan
@@ -49,12 +49,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
+ 
       - uses: actions/download-artifact@v4
         with:
           name: coverage
           path: coverage/
-
+ 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v5
         env:
@@ -72,14 +72,14 @@ jobs:
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.testExecutionReportPaths=coverage/test-reporter.xml
             -Dsonar.typescript.tsconfigPath=tsconfig.json
-
+ 
       - name: SonarQube Quality Gate
         uses: SonarSource/sonarqube-quality-gate-action@v1
         timeout-minutes: 5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-
+ 
   # ── Step 3: Deploy (only on push to main/master) ──────────────
   deploy:
     name: Deploy to Production
@@ -88,14 +88,14 @@ jobs:
     if: github.event_name == 'push'
     steps:
       - uses: actions/checkout@v4
-
+ 
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-
+ 
       - run: npm ci
       - run: npm run build
-
+ 
       - name: Deploy
         run: echo " Deploy your app here (Vercel / S3 / Azure / etc.)"
